@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toyota Test Drive Booking</title>
+    <style>
+        :root {
+            --toyota-red: #eb0a1e;
+            --toyota-dark: #1f1f1f;
+            --toyota-gray: #f5f5f5;
+            --color-bg-primary: #ffffff;
+            --color-bg-secondary: #f8f9fa;
+            --color-text-primary: #1f1f1f;
+            --color-text-secondary: #666666;
+            --color-border: #e0e0e0;
+            --color-success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: var(--toyota-dark);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--color-border);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: var(--toyota-red);
+            border-bottom-color: var(--toyota-red);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--color-text-primary);
+        }
+
+        input[type="date"],
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .vehicle-card {
+            padding: 15px;
+            border: 2px solid var(--color-border);
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .vehicle-card:hover {
+            border-color: var(--toyota-red);
+            transform: translateY(-2px);
+        }
+
+        .vehicle-card.selected {
+            border-color: var(--toyota-red);
+            background: #fff5f5;
+        }
+
+        .vehicle-card h3 {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .vehicle-card .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--toyota-gray);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--toyota-red);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #c70818;
+        }
+
+        .btn-secondary {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .route-card {
+            padding: 20px;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .route-card:hover,
+        .route-card.selected {
+            border-color: var(--toyota-red);
+            background: #fff5f5;
+        }
+
+        .route-card h3 {
+            color: var(--toyota-red);
+            margin-bottom: 8px;
+        }
+
+        .checklist {
+            margin-bottom: 20px;
+        }
+
+        .checklist-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .comparison-table th {
+            background: var(--toyota-gray);
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .rating {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .star.active,
+        .star:hover {
+            color: #ffd700;
+        }
+
+        .slider-container {
+            margin-bottom: 20px;
+        }
+
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: 600;
+            color: var(--toyota-red);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .vehicle-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🚗 Toyota Next-Gen Test Drive Experience</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="booking">1. Book &amp; Prep</button>
+            <button class="tab" data-tab="routes">2. Drive Routes</button>
+            <button class="tab" data-tab="checklist">3. Evaluation</button>
+            <button class="tab" data-tab="feedback">4. Feedback</button>
+            <button class="tab" data-tab="compare">5. Compare</button>
+        </div>
+
+        <!-- Tab 1: Booking & Prep -->
+        <div class="tab-content active" id="booking">
+            <h2>Schedule Your Test Drive</h2>
+            
+            <div class="form-group">
+                <label>Select Vehicle(s) to Test Drive (Max 3):</label>
+                <div class="vehicle-grid" id="vehicleGrid"></div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="testDate">Select Date:</label>
+                    <input type="date" id="testDate">
+                </div>
+                <div class="form-group">
+                    <label for="testTime">Available Times:</label>
+                    <select id="testTime">
+                        <option>09:00 AM</option>
+                        <option>10:30 AM</option>
+                        <option>01:00 PM</option>
+                        <option>03:00 PM</option>
+                        <option>05:00 PM</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3 style="margin: 30px 0 15px 0;">Pre-Drive Vehicle Prep</h3>
+            <p style="color: var(--color-text-secondary); margin-bottom: 20px;">Customize your vehicle settings so it's ready the moment you step in.</p>
+
+            <div class="slider-container">
+                <label>Your Height (for seat/mirror presets):</label>
+                <input type="range" class="slider" id="heightSlider" min="4.0" max="7.0" step="0.1" value="5.8">
+                <span class="slider-value" id="heightValue">5.8 ft</span>
+            </div>
+
+            <div class="form-group">
+                <label for="musicPref">Preferred Music Station:</label>
+                <select id="musicPref">
+                    <option>Off</option>
+                    <option>Pop/Hits</option>
+                    <option>Classic Rock</option>
+                    <option>Jazz</option>
+                    <option>Hip-Hop</option>
+                    <option>NPR/News</option>
+                </select>
+            </div>
+
+            <div class="slider-container">
+                <label>Climate Control Target:</label>
+                <input type="range" class="slider" id="climateSlider" min="60" max="85" value="70">
+                <span class="slider-value" id="climateValue">70°F</span>
+            </div>
+
+            <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+            <div id="bookingAlert"></div>
+        </div>
+
+        <!-- Tab 2: Routes -->
+        <div class="tab-content" id="routes">
+            <h2>Self-Guided Test Drive Routes</h2>
+            <p style="margin-bottom: 25px;">Choose a route tailored to your driving priorities. The route will be pre-loaded into the vehicle's navigation system.</p>
+
+            <div class="form-group">
+                <label>What's most important to you?</label>
+                <div id="routesContainer"></div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Checklist -->
+        <div class="tab-content" id="checklist">
+            <h2>In-App Evaluation Checklist</h2>
+            <p style="margin-bottom: 25px;">Keep track of what you like and dislike during your drive.</p>
+            <div id="checklistContainer"></div>
+        </div>
+
+        <!-- Tab 4: Feedback -->
+        <div class="tab-content" id="feedback">
+            <h2>Post-Drive Feedback</h2>
+            <p style="margin-bottom: 25px;">Tell us what you thought to help us refine your recommendations.</p>
+            <div id="feedbackContainer"></div>
+        </div>
+
+        <!-- Tab 5: Compare -->
+        <div class="tab-content" id="compare">
+            <h2>Instant Vehicle Comparison</h2>
+            <p style="margin-bottom: 25px;">Compare the specs of Toyota vehicles side-by-side.</p>
+            
+            <div class="form-group">
+                <label>Select up to 3 vehicles to compare:</label>
+                <div class="vehicle-grid" id="compareGrid"></div>
+            </div>
+
+            <table class="comparison-table" id="comparisonTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Specification</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const VEHICLES = [
+            { name: "Corolla", type: "Sedan", msrp: "$22,050", mpg: "35", seats: 5, cargo: "13.1 cu ft" },
+            { name: "Corolla Hybrid", type: "Sedan", msrp: "$23,600", mpg: "50", seats: 5, cargo: "13.1 cu ft" },
+            { name: "Camry", type: "Sedan", msrp: "$26,420", mpg: "32", seats: 5, cargo: "15.1 cu ft" },
+            { name: "Crown", type: "Sedan", msrp: "$41,045", mpg: "28", seats: 5, cargo: "15.2 cu ft" },
+            { name: "Prius", type: "Hybrid", msrp: "$27,950", mpg: "57", seats: 5, cargo: "19.9 cu ft" },
+            { name: "GR86", type: "Sports", msrp: "$29,300", mpg: "24", seats: 4, cargo: "6.3 cu ft" },
+            { name: "GR Supra", type: "Sports", msrp: "$46,440", mpg: "26", seats: 2, cargo: "10.2 cu ft" },
+            { name: "GR Corolla", type: "Sports", msrp: "$36,995", mpg: "28", seats: 5, cargo: "17.8 cu ft" },
+            { name: "Corolla Cross", type: "SUV", msrp: "$24,245", mpg: "32", seats: 5, cargo: "25.5 cu ft" },
+            { name: "RAV4", type: "SUV", msrp: "$28,675", mpg: "30", seats: 5, cargo: "37.6 cu ft" },
+            { name: "Highlander", type: "SUV", msrp: "$39,270", mpg: "25", seats: 8, cargo: "16.0 cu ft" },
+            { name: "Grand Highlander", type: "SUV", msrp: "$44,950", mpg: "24", seats: 8, cargo: "20.8 cu ft" },
+            { name: "4Runner", type: "SUV", msrp: "$42,155", mpg: "18", seats: 7, cargo: "47.2 cu ft" },
+            { name: "Sequoia", type: "SUV", msrp: "$60,460", mpg: "19", seats: 8, cargo: "22.3 cu ft" },
+            { name: "Land Cruiser", type: "SUV", msrp: "$57,345", mpg: "22", seats: 8, cargo: "33.2 cu ft" },
+            { name: "bZ4X", type: "Electric", msrp: "$44,080", mpg: "N/A", seats: 5, cargo: "27.7 cu ft" },
+            { name: "Tacoma", type: "Truck", msrp: "$31,500", mpg: "21", seats: 5, cargo: "Truck Bed" },
+            { name: "Tundra", type: "Truck", msrp: "$40,880", mpg: "20", seats: 6, cargo: "Truck Bed" },
+            { name: "Sienna", type: "Minivan", msrp: "$36,770", mpg: "36", seats: 8, cargo: "33.5 cu ft" }
+        ];
+
+        const ROUTES = [
+            { name: "Highway Focus", description: "15 mins - Includes I-95 on-ramp and open highway driving.", priority: "Highway Cruising" },
+            { name: "City & Parking", description: "15 mins - Downtown loop with parallel parking and tight turns.", priority: "City Maneuverability" },
+            { name: "Mixed Commute", description: "20 mins - Balanced mix of suburban streets, highway, and stop-and-go.", priority: "Daily Commuting" },
+            { name: "Off-Road Simulation", description: "20 mins - Dirt track and uneven terrain (SUVs/Trucks only).", priority: "Off-Road Capability" }
+        ];
+
+        let selectedVehicles = [];
+        let compareVehicles = [];
+        let bookingData = null;
+        let feedbackData = [];
+
+        // Initialize vehicle grid
+        function initVehicleGrid() {
+            const grid = document.getElementById('vehicleGrid');
+            VEHICLES.forEach(vehicle => {
+                const card = document.createElement('div');
+                card.className = 'vehicle-card';
+                card.innerHTML = `
+                    <h3>${vehicle.name}</h3>
+                    <span class="badge">${vehicle.type}</span>
+                `;
+                card.onclick = () => toggleVehicleSelection(vehicle.name, card);
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleVehicleSelection(name, element) {
+            if (selectedVehicles.includes(name)) {
+                selectedVehicles = selectedVehicles.filter(v => v !== name);
+                element.classList.remove('selected');
+            } else if (selectedVehicles.length < 3) {
+                selectedVehicles.push(name);
+                element.classList.add('selected');
+            } else {
+                alert('Maximum 3 vehicles can be selected');
+            }
+        }
+
+        // Initialize routes
+        function initRoutes() {
+            const container = document.getElementById('routesContainer');
+            ROUTES.forEach(route => {
+                const card = document.createElement('div');
+                card.className = 'route-card';
+                card.innerHTML = `
+                    <h3>${route.name}</h3>
+                    <p><strong>Priority:</strong> ${route.priority}</p>
+                    <p>${route.description}</p>
+                `;
+                card.onclick = () => {
+                    document.querySelectorAll('.route-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                };
+                container.appendChild(card);
+            });
+        }
+
+        // Initialize checklist
+        function initChecklist() {
+            const container = document.getElementById('checklistContainer');
+            if (selectedVehicles.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">Book a test drive first to unlock the checklist.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            selectedVehicles.forEach(vehicle => {
+                const section = document.createElement('div');
+                section.innerHTML = `<h3 style="margin-bottom: 15px; color: var(--toyota-red);">${vehicle}</h3>`;
+                
+                const items = [
+                    'Acceleration & Braking feels smooth',
+                    'Visibility & Blind spots are clear',
+                    'Infotainment is easy to use',
+                    'Cabin noise is acceptable',
+                    'Seat comfort is excellent'
+                ];
+
+                const checklist = document.createElement('div');
+                checklist.className = 'checklist';
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'checklist-item';
+                    div.innerHTML = `
+                        <input type="checkbox" id="${vehicle}-${item}">
+                        <label for="${vehicle}-${item}">${item}</label>
+                    `;
+                    checklist.appendChild(div);
+                });
+
+                section.appendChild(checklist);
+                container.appendChild(section);
+            });
+        }
+
+        // Initialize feedback
+        function initFeedback() {
+            const container = document.getElementById('feedbackContainer');
+            if (selectedVehicles.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">Complete a test drive to leave feedback.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            selectedVehicles.forEach(vehicle => {
+                const section = document.createElement('div');
+                section.style.marginBottom = '30px';
+                section.innerHTML = `
+                    <h3 style="margin-bottom: 15px; color: var(--toyota-red);">${vehicle}</h3>
+                    <label>Overall Rating:</label>
+                    <div class="rating" id="rating-${vehicle}">
+                        ${[1,2,3,4,5,6,7,8,9,10].map(i => `<span class="star" data-value="${i}">★</span>`).join('')}
+                    </div>
+                    <div class="form-group">
+                        <label>What did you love about the ${vehicle}?</label>
+                        <input type="text" id="likes-${vehicle}" placeholder="Great acceleration, comfortable seats...">
+                    </div>
+                    <div class="form-group">
+                        <label>What could be better?</label>
+                        <input type="text" id="dislikes-${vehicle}" placeholder="Infotainment could be more intuitive...">
+                    </div>
+                    <button class="btn btn-primary" onclick="submitFeedback('${vehicle}')">Submit Feedback</button>
+                    <div id="feedback-alert-${vehicle}"></div>
+                `;
+                container.appendChild(section);
+
+                // Add star rating functionality
+                const stars = section.querySelectorAll('.star');
+                stars.forEach(star => {
+                    star.onclick = () => {
+                        const value = parseInt(star.dataset.value);
+                        stars.forEach((s, i) => {
+                            s.classList.toggle('active', i < value);
+                        });
+                    };
+                });
+            });
+        }
+
+        // Initialize comparison grid
+        function initCompareGrid() {
+            const grid = document.getElementById('compareGrid');
+            grid.innerHTML = '';
+            VEHICLES.forEach(vehicle => {
+                const card = document.createElement('div');
+                card.className = 'vehicle-card';
+                card.innerHTML = `
+                    <h3>${vehicle.name}</h3>
+                    <span class="badge">${vehicle.type}</span>
+                `;
+                card.onclick = () => toggleCompareSelection(vehicle.name, card);
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleCompareSelection(name, element) {
+            if (compareVehicles.includes(name)) {
+                compareVehicles = compareVehicles.filter(v => v !== name);
+                element.classList.remove('selected');
+            } else if (compareVehicles.length < 3) {
+                compareVehicles.push(name);
+                element.classList.add('selected');
+            } else {
+                alert('Maximum 3 vehicles can be compared');
+            }
+            updateComparisonTable();
+        }
+
+        function updateComparisonTable() {
+            const table = document.getElementById('comparisonTable');
+            if (compareVehicles.length === 0) {
+                table.style.display = 'none';
+                return;
+            }
+
+            table.style.display = 'table';
+            const selectedData = VEHICLES.filter(v => compareVehicles.includes(v.name));
+            
+            const thead = table.querySelector('thead tr');
+            thead.innerHTML = '<th>Specification</th>' + selectedData.map(v => `<th>${v.name}</th>`).join('');
+
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = `
+                <tr><td><strong>Starting MSRP</strong></td>${selectedData.map(v => `<td>${v.msrp}</td>`).join('')}</tr>
+                <tr><td><strong>MPG (Combined)</strong></td>${selectedData.map(v => `<td>${v.mpg}</td>`).join('')}</tr>
+                <tr><td><strong>Seating</strong></td>${selectedData.map(v => `<td>${v.seats}</td>`).join('')}</tr>
+                <tr><td><strong>Cargo Space</strong></td>${selectedData.map(v => `<td>${v.cargo}</td>`).join('')}</tr>
+                <tr><td><strong>Type</strong></td>${selectedData.map(v => `<td>${v.type}</td>`).join('')}</tr>
+            `;
+        }
+
+        function confirmBooking() {
+            const date = document.getElementById('testDate').value;
+            const time = document.getElementById('testTime').value;
+            
+            if (selectedVehicles.length === 0) {
+                document.getElementById('bookingAlert').innerHTML = '<div class="alert" style="background: #f8d7da; color: #721c24; margin-top: 15px;">Please select at least one vehicle.</div>';
+                return;
+            }
+
+            if (!date) {
+                document.getElementById('bookingAlert').innerHTML = '<div class="alert" style="background: #f8d7da; color: #721c24; margin-top: 15px;">Please select a date.</div>';
+                return;
+            }
+
+            bookingData = {
+                vehicles: selectedVehicles,
+                date: date,
+                time: time,
+                height: document.getElementById('heightSlider').value,
+                music: document.getElementById('musicPref').value,
+                climate: document.getElementById('climateSlider').value
+            };
+
+            document.getElementById('bookingAlert').innerHTML = `
+                <div class="alert alert-success" style="margin-top: 15px;">
+                    ✓ Successfully booked! Your test drive for ${selectedVehicles.join(', ')} is scheduled for ${date} at ${time}.
+                </div>
+            `;
+
+            // Update other tabs
+            initChecklist();
+            initFeedback();
+        }
+
+        function submitFeedback(vehicle) {
+            const rating = document.querySelectorAll(`#rating-${vehicle} .star.active`).length;
+            const likes = document.getElementById(`likes-${vehicle}`).value;
+            const dislikes = document.getElementById(`dislikes-${vehicle}`).value;
+
+            if (rating === 0) {
+                document.getElementById(`feedback-alert-${vehicle}`).innerHTML = '<div class="alert" style="background: #f8d7da; color: #721c24; margin-top: 15px;">Please provide a rating.</div>';
+                return;
+            }
+
+            feedbackData.push({ vehicle, rating, likes, dislikes });
+            document.getElementById(`feedback-alert-${vehicle}`).innerHTML = '<div class="alert alert-success" style="margin-top: 15px;">✓ Feedback saved! We\'ll use this to recommend your perfect match.</div>';
+        }
+
+        // Tab navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+
+                // Refresh content when switching tabs
+                if (targetTab === 'checklist') initChecklist();
+                if (targetTab === 'feedback') initFeedback();
+            });
+        });
+
+        // Slider updates
+        document.getElementById('heightSlider').addEventListener('input', (e) => {
+            document.getElementById('heightValue').textContent = e.target.value + ' ft';
+        });
+
+        document.getElementById('climateSlider').addEventListener('input', (e) => {
+            document.getElementById('climateValue').textContent = e.target.value + '°F';
+        });
+
+        // Set min date to today
+        document.getElementById('testDate').min = new Date().toISOString().split('T')[0];
+
+        // Initialize
+        initVehicleGrid();
+        initRoutes();
+        initCompareGrid();
+    </script>
+</body>
+</html>
